@@ -6,3 +6,5 @@ langchain-community
 python-dotenv
 pydantic
 websockets
+duckduckgo-search
+langchain-community

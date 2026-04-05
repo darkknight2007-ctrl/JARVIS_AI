@@ -110,13 +110,34 @@ async def websocket_endpoint(websocket: WebSocket):
                     elif kind == "on_chat_model_stream":
                         chunk = event["data"].get("chunk")
                         if chunk and hasattr(chunk, "content") and chunk.content:
-                            # Only stream text content (skip tool call chunks)
+                            # Stream string chunks
                             if isinstance(chunk.content, str):
                                 await websocket.send_json({
                                     "type": "token",
                                     "content": chunk.content,
                                 })
                                 final_output += chunk.content
+                            # Stream dictionary blocks (some models output lists of text blocks)
+                            elif isinstance(chunk.content, list):
+                                for block in chunk.content:
+                                    if isinstance(block, dict) and block.get("type") == "text":
+                                        text_val = block.get("text", "")
+                                        await websocket.send_json({
+                                            "type": "token",
+                                            "content": text_val,
+                                        })
+                                        final_output += text_val
+
+                    # Fallback if streaming failed to catch it
+                    elif kind == "on_chat_model_end":
+                        output = event["data"].get("output")
+                        if output and hasattr(output, "content") and isinstance(output.content, str):
+                            if not final_output and output.content:
+                                await websocket.send_json({
+                                    "type": "token",
+                                    "content": output.content,
+                                })
+                                final_output = output.content
 
                 # Save to conversation history
                 if final_output:
@@ -124,7 +145,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 # Signal completion
                 await websocket.send_json({"type": "done"})
-                print(f"[JARVIS] Response sent ({len(final_output)} chars).")
+                print(f"[JARVIS] Response sent: {repr(final_output)}")
 
             except Exception as agent_err:
                 print(f"[ERROR] Agent error: {agent_err}")

@@ -1,6 +1,12 @@
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from langchain.tools import tool
+
+try:
+    from ddgs import DDGS
+except ImportError:
+    DDGS = None
 
 
 @tool
@@ -124,5 +130,60 @@ def run_terminal_command(command: str, working_directory: str = ".") -> str:
         return f"Error executing command: {str(e)}"
 
 
+@tool
+def get_current_time() -> str:
+    """Get the current date and time.
+    Use this to tell the user the time if they ask.
+    """
+    return f"The current date and time is: {datetime.now().strftime('%Y-%m-%d %I:%M:%S %p')}"
+
+@tool
+def search_web(query: str) -> str:
+    """Search the internet for real-time information, news, programming documentation, or any external knowledge.
+    Always use this when the user asks a question about current events or documentation you aren't sure about.
+    """
+    if DDGS is None:
+        return "Error: duckduckgo-search is not installed."
+        
+    try:
+        results = DDGS().text(query, max_results=3)
+        if not results:
+            return "No results found."
+        
+        output = []
+        for r in results:
+            output.append(f"Title: {r.get('title')}\nURL: {r.get('href')}\nSummary: {r.get('body')}\n")
+        return "\n".join(output)
+    except Exception as e:
+        return f"Error searching the web: {str(e)}"
+
+@tool
+def scaffold_project(framework: str, path: str) -> str:
+    """Scaffold a massive standard project in a given directory (e.g. React, Next.js, Vite).
+    Arguments:
+    - framework: The framework to scaffold. Valid options: 'vite', 'nextjs'.
+    - path: The target directory (relative to current directory or absolute).
+    """
+    try:
+        target_path = Path(path).resolve()
+        
+        if framework.lower() == 'vite':
+            # Run npm create vite@latest
+            cmd = f"npx -y create-vite@latest {target_path} --template react"
+        elif framework.lower() == 'nextjs':
+            cmd = f"npx -y create-next-app@latest {target_path} --typescript --tailwind --eslint --app --src-dir --import-alias '@/*'"
+        else:
+            return f"Error: Unsupported framework '{framework}'. Supported: vite, nextjs."
+            
+        # Ensure parent target path exists
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, text=True)
+        return f"Successfully scaffolded {framework} project at {target_path}.\nTerminal Output:\n{output}"
+    except subprocess.CalledProcessError as e:
+        return f"Error scaffolding {framework} project: {e.output}"
+    except Exception as e:
+        return f"Error scaffolding project: {str(e)}"
+
 def get_tools():
-    return [read_file, write_file, list_directory, create_directory, run_terminal_command]
+    return [read_file, write_file, list_directory, create_directory, run_terminal_command, get_current_time, search_web, scaffold_project]

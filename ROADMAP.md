@@ -13,11 +13,11 @@ This document outlines future features and capabilities we plan to add to JARVIS
    - Visual directory tree in the left sidebar of the UI.
    - Ability to click and preview code files directly within the browser UI.
 
-3. **Web Search Engine:**
+3. **[x] Web Search Engine:**
    - Give JARVIS a tool to search the internet (e.g., using DuckDuckGo API or similar).
    - Allow fetching the latest documentation for frameworks.
 
-4. **Project Scaffolders:**
+4. **[x] Project Scaffolders:**
    - Dedicated tools for JARVIS to generate entire standard projects in one click (React, Next.js, Vite, etc.).
    - Pre-configured scaffolding templates.
 

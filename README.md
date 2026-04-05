@@ -26,23 +26,34 @@ pip3 install -r requirements.txt
 
 ---
 
-## Running JARVIS
+## Running JARVIS (Startup Guide)
 
 ### 1. Start Ollama (if not already running)
 ```bash
 ollama serve
 ```
 
-### 2. Start the backend
+### 2. Start the Backend Server
+Whenever you open VS Code and want to wake JARVIS up, run this in a New Terminal:
 ```bash
 cd "/Users/vishnu/Desktop/VS CODE/JARVIS/backend"
 python3 main.py
 ```
 
 ### 3. Open the UI
-Open your browser and go to: **http://localhost:8000**
+Once the terminal says "Application startup complete", open your web browser and go to: 
+**http://localhost:8000**
 
-Or open `frontend/index.html` directly in your browser.
+---
+
+## How to Restart the Server
+
+If JARVIS gets stuck, or if you see a **"Connection Refused"** error in your browser, it means the backend server crashed. To restart it:
+
+1. Click inside the VS Code terminal where `python3 main.py` was running.
+2. Press `Ctrl + C` on your keyboard to force-quit the stuck process.
+3. Press the `Up Arrow` on your keyboard (this brings back the `python3 main.py` command) and hit `Enter`.
+4. Hard Refresh your browser page (`Cmd+Shift+R` or `Ctrl+F5`)!
 
 ---
 

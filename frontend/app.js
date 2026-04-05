@@ -162,17 +162,18 @@ function appendUserMessage(text) {
 function startAssistantBubble() {
   messageCount++;
   updateMsgCount();
+  const bubbleId = "bubble-" + Date.now();
   const msgs = document.getElementById("messages");
   const row = document.createElement("div");
   row.className = "msg assistant";
   row.innerHTML = `
     <div class="msg-avatar">J</div>
     <div class="msg-content">
-      <div class="msg-bubble" id="streaming-bubble"><span class="cursor"></span></div>
+      <div class="msg-bubble markdown-body" id="${bubbleId}"><span class="cursor"></span></div>
       <div class="msg-time">${timeNow()}</div>
     </div>`;
   msgs.appendChild(row);
-  currentBubble = document.getElementById("streaming-bubble");
+  currentBubble = document.getElementById(bubbleId);
   scrollToBottom();
 }
 
@@ -218,6 +219,10 @@ function finishStreaming() {
 
 // ── Markdown rendering ─────────────────────────────────────
 function parseMarkdown(text) {
+  // Convert <think> tags into markdown blockquotes before parsing
+  text = text.replace(/<think>/g, "\n> **🧠 JARVIS Thought Process:**\n> ");
+  text = text.replace(/<\/think>/g, "\n\n");
+  
   if (typeof marked === "undefined") return escapeHtml(text).replace(/\n/g, "<br>");
 
   marked.setOptions({
