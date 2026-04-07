@@ -378,5 +378,75 @@ function initCanvas() {
 window.addEventListener("DOMContentLoaded", () => {
   connect();
   initCanvas();
+  fetchFileTree();
   document.getElementById("msg-input").focus();
 });
+
+// ── File Explorer ──────────────────────────────────────────
+async function fetchFileTree() {
+  const container = document.getElementById("file-tree-container");
+  container.innerHTML = '<span class="loader" style="transform:scale(0.5); display:inline-block"></span>';
+  try {
+    const res = await fetch(`${API_URL}/api/files`);
+    if (!res.ok) throw new Error("Failed to load files");
+    const data = await res.json();
+    container.innerHTML = "";
+    
+    // Create root UL securely
+    const ul = document.createElement("ul");
+    ul.className = "file-tree";
+    data.tree.forEach(node => ul.appendChild(createTreeNode(node)));
+    container.appendChild(ul);
+  } catch (err) {
+    container.innerHTML = `<span style="color:var(--red); font-size:12px;">Error loading files</span>`;
+  }
+}
+
+function createTreeNode(node) {
+  const li = document.createElement("li");
+  const isDir = node.type === "folder";
+  
+  const nodeDiv = document.createElement("div");
+  nodeDiv.className = `tree-node ${isDir ? "tree-folder" : "tree-file"}`;
+  
+  const icon = document.createElement("span");
+  icon.textContent = isDir ? "📁" : "📄";
+  
+  const label = document.createElement("span");
+  label.textContent = node.name;
+  
+  nodeDiv.appendChild(icon);
+  nodeDiv.appendChild(label);
+  
+  if (isDir) {
+    // Hidden children container
+    const childrenUl = document.createElement("ul");
+    childrenUl.className = "tree-children";
+    if (node.children) {
+      node.children.forEach(child => childrenUl.appendChild(createTreeNode(child)));
+    }
+    
+    li.appendChild(nodeDiv);
+    li.appendChild(childrenUl);
+    
+    // Toggle functionality
+    nodeDiv.onclick = () => {
+      const isOpen = childrenUl.classList.contains("open");
+      if (isOpen) {
+        childrenUl.classList.remove("open");
+        icon.textContent = "📁";
+      } else {
+        childrenUl.classList.add("open");
+        icon.textContent = "📂";
+      }
+    };
+  } else {
+    li.appendChild(nodeDiv);
+    // Paste file path into chat when clicked
+    nodeDiv.onclick = () => {
+      insertPrompt(`Examine the file at: ${node.path}`);
+    };
+  }
+  
+  return li;
+}

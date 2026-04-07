@@ -51,11 +51,20 @@
 
       <hr class="divider" />
 
+      <div class="section-label">
+        File Explorer
+        <button id="refresh-tree" onclick="fetchFileTree()" title="Refresh" style="float: right; background: none; border: none; color: var(--text2); cursor: pointer; font-size: 14px;">↻</button>
+      </div>
+      <div id="file-tree-container" class="file-tree-container">
+        <!-- JS will populate tree here -->
+      </div>
+      
+      <hr class="divider" />
+
       <div class="section-label">Quick Prompts</div>
       <div class="quick-btns">
         <button class="quick-btn" onclick="insertPrompt('Create a modern landing page with hero section, features, and footer')">🚀 Landing Page</button>
         <button class="quick-btn" onclick="insertPrompt('Build a responsive navbar with hamburger menu')">🧭 Navbar</button>
-        <button class="quick-btn" onclick="insertPrompt('List files in the current directory')">📂 List Files</button>
         <button class="quick-btn" onclick="insertPrompt('Create a dark-theme CSS design system with variables')">🌙 Dark Theme</button>
         <button class="quick-btn" onclick="insertPrompt('Scaffold a new HTML/CSS/JS project structure')">📦 New Project</button>
       </div>

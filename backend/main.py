@@ -54,6 +54,37 @@ async def clear_history():
     jarvis.clear_history()
     return {"status": "cleared"}
 
+def get_dir_tree(directory: Path, ignore_dirs=None):
+    if ignore_dirs is None:
+        ignore_dirs = {".git", "node_modules", "venv", ".venv", "__pycache__"}
+        
+    tree = []
+    try:
+        paths = sorted(directory.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower()))
+    except PermissionError:
+        return []
+        
+    for path in paths:
+        if path.name in ignore_dirs or path.name.startswith("."): # ignore hidden files & bloated dirs
+            continue
+            
+        is_dir = path.is_dir()
+        node = {
+            "name": path.name,
+            "path": str(path.absolute()),
+            "type": "folder" if is_dir else "file",
+        }
+        if is_dir:
+            node["children"] = get_dir_tree(path, ignore_dirs)
+        tree.append(node)
+    return tree
+
+@app.get("/api/files")
+async def get_files():
+    # Return structure of the project root (parent of backend folder)
+    root_path = Path(__file__).parent.parent.absolute()
+    return {"tree": get_dir_tree(root_path)}
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
