@@ -18,7 +18,7 @@ function connect() {
 
   ws.onopen = () => {
     setStatus("connected");
-    fetchHealth();
+    fetchModels();
   };
 
   ws.onclose = () => {
@@ -35,13 +35,55 @@ function connect() {
   };
 }
 
-function fetchHealth() {
-  fetch(`${API_URL}/health`)
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById("model-name").textContent = d.model || "—";
-    })
-    .catch(() => {});
+async function fetchModels() {
+  try {
+    const res = await fetch(`${API_URL}/api/models`);
+    const data = await res.json();
+    const select = document.getElementById("model-select");
+    
+    // Clear and populate
+    select.innerHTML = "";
+    data.models.forEach(modelName => {
+      const option = document.createElement("option");
+      option.value = modelName;
+      option.textContent = modelName;
+      if (modelName === data.active) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+  } catch (e) {
+    console.error("Failed to load models:", e);
+    document.getElementById("model-select").innerHTML = `<option>Error Loading Models</option>`;
+  }
+}
+
+async function switchModel(newModel) {
+  const select = document.getElementById("model-select");
+  select.disabled = true;
+  const originalColor = select.style.color;
+  select.style.color = "var(--orange)"; // visual loading indicator
+  
+  try {
+    const res = await fetch(`${API_URL}/api/model`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: newModel })
+    });
+    const data = await res.json();
+    if(data.status === "success") {
+       select.style.color = "var(--green)";
+       setTimeout(() => select.style.color = originalColor, 1500);
+    } else {
+       throw new Error(data.error);
+    }
+  } catch (e) {
+    console.error("Error switching model:", e);
+    alert("Failed to switch model: " + e.message);
+    select.style.color = "var(--red)";
+  } finally {
+    select.disabled = false;
+  }
 }
 
 // ── Handle incoming server events ─────────────────────────

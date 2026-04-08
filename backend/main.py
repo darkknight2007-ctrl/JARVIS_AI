@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -84,6 +84,38 @@ async def get_files():
     # Return structure of the project root (parent of backend folder)
     root_path = Path(__file__).parent.parent.absolute()
     return {"tree": get_dir_tree(root_path)}
+
+@app.get("/api/models")
+async def get_models():
+    """Fetch installed local models from Ollama."""
+    import urllib.request
+    import urllib.error
+    
+    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    try:
+        req = urllib.request.Request(f"{base_url}/api/tags", headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read().decode())
+            # Extract just the names
+            models = [m.get("name") for m in data.get("models", [])]
+            return {"models": models, "active": jarvis.model_name}
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch Ollama models: {e}")
+        return {"models": [jarvis.model_name], "active": jarvis.model_name}
+
+@app.post("/api/model")
+async def switch_model(request: Request):
+    """Switch the current JARVIS LangChain engine model."""
+    data = await request.json()
+    new_model = data.get("model")
+    if not new_model:
+        return {"error": "No model provided"}, 400
+        
+    try:
+        jarvis.change_model(new_model)
+        return {"status": "success", "active": jarvis.model_name}
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 @app.websocket("/ws")

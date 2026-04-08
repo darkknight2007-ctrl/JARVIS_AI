@@ -33,7 +33,9 @@
         </div>
         <div class="status-row">
           <span class="status-label">Model:</span>
-          <span class="status-value" id="model-name">—</span>
+          <select id="model-select" class="model-dropdown" onchange="switchModel(this.value)">
+            <option value="">Loading...</option>
+          </select>
         </div>
       </div>
 

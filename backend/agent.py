@@ -61,6 +61,14 @@ class JarvisAgent:
             system_prompt=JARVIS_SYSTEM_PROMPT,
         )
 
+    def change_model(self, new_model: str):
+        print(f"[JARVIS] Switching model from {self.model_name} to {new_model}...")
+        self.model_name = new_model
+        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        self.llm = ChatOllama(model=new_model, base_url=base_url, temperature=0.1)
+        self._build_agent()
+        print(f"[JARVIS] Model successfully switched to {new_model}.")
+
     def add_to_history(self, human: str, ai: str):
         self.conversation_history.append(HumanMessage(content=human))
         self.conversation_history.append(AIMessage(content=ai))

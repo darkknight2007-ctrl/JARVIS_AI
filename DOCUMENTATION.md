@@ -128,6 +128,22 @@ This was a major update that both fixed showstopping bugs and added 3 new tools.
 - Ignores `.git`, `node_modules`, `venv`, `__pycache__`, and hidden files
 - Refresh button (↻) to re-fetch the tree after JARVIS creates new files
 
+### v1.4 — Dynamic Model Switching *(April 8, 2026)*
+**Commit:** `Pending`
+
+| What changed | Details |
+|---|---|
+| [agent.py](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/backend/agent.py) | Added `change_model()` to seamlessly hot-swap the internal LangChain LLM |
+| [main.py](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/backend/main.py) | Added `GET /api/models` (queries local Ollama) and `POST /api/model` endpoints |
+| [index.html](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/frontend/index.html) | Replaced static model text with `<select id="model-select">` dropdown |
+| [app.js](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/frontend/app.js) | Added async JS (`fetchModels()`, `switchModel()`) to fetch and hot-swap AI models natively |
+
+**Key Features:**
+- Automatically queries standard `localhost:11434/api/tags` to fetch all installed Ollama models
+- Dropdown populates instantly on page load
+- Switching models **preserves chat history** so the new model inherits the current conversation context
+- Clean UI loading states utilizing CSS class variables (orange for pending switch, green for success)
+
 ---
 
 ## Current Project Structure
@@ -176,6 +192,8 @@ JARVIS/
 | `GET` | `/history` | Returns conversation history |
 | `POST` | `/clear` | Clears conversation memory |
 | `GET` | `/api/files` | Returns recursive directory tree as JSON |
+| `GET` | `/api/models` | Fetches installed local Ollama models |
+| `POST` | `/api/model` | Hot-swaps the current LangChain model |
 | `WS` | `/ws` | Real-time WebSocket for chat streaming |
 
 ---
