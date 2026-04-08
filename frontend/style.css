@@ -3,7 +3,8 @@
    (v1.3 File Explorer Update)
    ========================================================= */
 
-:root {
+/* ── Theme Definitions ── */
+[data-theme="default"] {
   --bg0:        #060812;
   --bg1:        #0b0f1e;
   --bg2:        #111828;
@@ -20,6 +21,49 @@
   --text3:      #445577;
   --border:     rgba(0, 212, 255, 0.14);
   --border2:    rgba(255,255,255,0.05);
+  --particle-rgb: 0, 212, 255;
+  --sidebar-w:  258px;
+}
+
+[data-theme="iron-man"] {
+  --bg0:        #1a0505;
+  --bg1:        #2a0a0a;
+  --bg2:        #401515;
+  --bg3:        #300d0d;
+  --cyan:       #ffb300;     /* gold */
+  --cyan-dim:   rgba(255, 179, 0, 0.55);
+  --cyan-glow:  rgba(255, 179, 0, 0.12);
+  --blue:       #ffcc44;
+  --green:      #00ff88;
+  --red:        #ff4444;
+  --orange:     #ff6600;
+  --text1:      #ffeebb;
+  --text2:      #ccaa77;
+  --text3:      #aa7755;
+  --border:     rgba(255, 179, 0, 0.2);
+  --border2:    rgba(255, 255, 255, 0.05);
+  --particle-rgb: 255, 179, 0;
+  --sidebar-w:  258px;
+}
+
+[data-theme="matrix"] {
+  --bg0:        #000000;
+  --bg1:        #020802;
+  --bg2:        #051505;
+  --bg3:        #030a03;
+  --cyan:       #00ff00;     /* neon green */
+  --cyan-dim:   rgba(0, 255, 0, 0.55);
+  --cyan-glow:  rgba(0, 255, 0, 0.12);
+  --blue:       #00cc00;
+  --green:      #00ff88;
+  --red:        #ff0000;
+  --orange:     #ff8800;
+  --text1:      #ccffcc;
+  --text2:      #55aa55;
+  --text3:      #225522;
+  --border:     rgba(0, 255, 0, 0.2);
+  --border2:    rgba(255, 255, 255, 0.05);
+  --particle-rgb: 0, 255, 0;
   --sidebar-w:  258px;
 }
 

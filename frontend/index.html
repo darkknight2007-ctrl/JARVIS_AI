@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
   <link rel="stylesheet" href="/static/style.css" />
 </head>
-<body>
+<body data-theme="default">
   <canvas id="bg-canvas"></canvas>
 
   <div class="app-container">
@@ -35,6 +35,14 @@
           <span class="status-label">Model:</span>
           <select id="model-select" class="model-dropdown" onchange="switchModel(this.value)">
             <option value="">Loading...</option>
+          </select>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Theme:</span>
+          <select id="theme-select" class="model-dropdown" onchange="switchTheme(this.value)">
+            <option value="default">Default</option>
+            <option value="iron-man">Iron Man</option>
+            <option value="matrix">The Matrix</option>
           </select>
         </div>
       </div>

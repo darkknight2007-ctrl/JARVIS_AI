@@ -128,6 +128,24 @@ This was a major update that both fixed showstopping bugs and added 3 new tools.
 - Ignores `.git`, `node_modules`, `venv`, `__pycache__`, and hidden files
 - Refresh button (↻) to re-fetch the tree after JARVIS creates new files
 
+### v1.5 — Theme Engine & Agent Precision Update *(April 8, 2026)*
+**Commit:** `Pending`
+
+| What changed | Details |
+|---|---|
+| [style.css](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/frontend/style.css) | Extracted hardcoded `:root` variables into dynamic `[data-theme]` attributes. |
+| [index.html](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/frontend/index.html) | Added a Theme Selection Dropdown in the sidebar. |
+| [app.js](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/frontend/app.js) | Implemented `switchTheme()`, `localStorage` saving, and dynamic `--particle-rgb` background drawing. |
+| [agent.py](file:///Users/vishnu/Desktop/VS%20CODE/JARVIS/backend/agent.py) | Massive System Prompt rewrite enforcing strict agentic behavior and precise tool usage logic. |
+
+**Key Features:**
+- **Dynamic Themes:** Hot-swappable UI palettes (`default` Cyan, `iron-man` Gold/Red, `matrix` Neon).
+- **Persistent Preferences:** The chosen theme is now cached persistently in browser `localStorage`.
+- **Canvas Integration:** The animated background particle lines dynamically inhale CSS RGB variables to match the active theme.
+- **Agentic Rewrite:** JARVIS now operates under a strict, hyper-precise persona, prioritizing direct code output over unnecessary file generation, ensuring clean project workspaces.
+
+---
+
 ### v1.4 — Dynamic Model Switching *(April 8, 2026)*
 **Commit:** `Pending`
 

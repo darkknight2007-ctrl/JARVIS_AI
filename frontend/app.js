@@ -387,8 +387,9 @@ function initCanvas() {
         const dy = dots[i].y - dots[j].y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist < 120) {
+          const rgb = getComputedStyle(document.body).getPropertyValue('--particle-rgb').trim() || '0, 212, 255';
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(0,212,255,${.25 * (1 - dist/120)})`;
+          ctx.strokeStyle = `rgba(${rgb}, ${.25 * (1 - dist/120)})`;
           ctx.lineWidth = .5;
           ctx.moveTo(dots[i].x, dots[i].y);
           ctx.lineTo(dots[j].x, dots[j].y);
@@ -398,9 +399,10 @@ function initCanvas() {
     }
     // Draw dots
     dots.forEach(d => {
+      const rgb = getComputedStyle(document.body).getPropertyValue('--particle-rgb').trim() || '0, 212, 255';
       ctx.beginPath();
       ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(0,212,255,0.5)";
+      ctx.fillStyle = `rgba(${rgb}, 0.5)`;
       ctx.fill();
       d.x += d.vx; d.y += d.vy;
       if (d.x < 0 || d.x > W) d.vx *= -1;
@@ -418,11 +420,25 @@ function initCanvas() {
 
 // ── Init ───────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
   connect();
   initCanvas();
   fetchFileTree();
   document.getElementById("msg-input").focus();
 });
+
+// ── Theme Engine ──────────────────────────────────────────
+function switchTheme(themeName) {
+  document.body.setAttribute('data-theme', themeName);
+  localStorage.setItem('jarvis-theme', themeName);
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem('jarvis-theme') || 'default';
+  document.body.setAttribute('data-theme', savedTheme);
+  const select = document.getElementById("theme-select");
+  if (select) select.value = savedTheme;
+}
 
 // ── File Explorer ──────────────────────────────────────────
 async function fetchFileTree() {
