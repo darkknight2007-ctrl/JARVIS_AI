@@ -4,12 +4,12 @@ This document outlines future features and capabilities we plan to add to JARVIS
 
 ## Planned Features
 
-1. **Vision Integration:**
+1. **[x] Vision Integration:**
    - Allow JARVIS to process images and screenshots.
    - Use models like LLaVA or similar local vision models.
    - Turn visual designs directly into HTML/CSS code.
 
-2. **File Explorer Panel:**
+2. **[x] File Explorer Panel:**
    - Visual directory tree in the left sidebar of the UI.
    - Ability to click and preview code files directly within the browser UI.
 
@@ -21,10 +21,10 @@ This document outlines future features and capabilities we plan to add to JARVIS
    - Dedicated tools for JARVIS to generate entire standard projects in one click (React, Next.js, Vite, etc.).
    - Pre-configured scaffolding templates.
 
-5. **Theme Engine:**
+5. **[x] Theme Engine:**
    - Ability to switch between different visual themes in the UI (e.g., Iron Man theme, Stealth Mode, Matrix).
 
-6. **Git/GitHub Integration within UI:**
+6. **[x] Git/GitHub Integration within UI:**
    - Allow JARVIS to show visual Git diffs.
    - A button in the UI to sync/push code directly to GitHub.
 

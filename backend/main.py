@@ -4,9 +4,9 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import HumanMessage
 
@@ -114,6 +114,83 @@ async def switch_model(request: Request):
     try:
         jarvis.change_model(new_model)
         return {"status": "success", "active": jarvis.model_name}
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...), question: str = Form("What's in this image?")):
+    """Upload an image for vision analysis."""
+    try:
+        # Create uploads directory if it doesn't exist
+        upload_dir = Path(__file__).parent / "uploads"
+        upload_dir.mkdir(exist_ok=True)
+
+        # Generate unique filename
+        import uuid
+        file_extension = Path(file.filename).suffix
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_path = upload_dir / unique_filename
+
+        # Save the file
+        contents = await file.read()
+        file_path.write_bytes(contents)
+
+        # Automatically analyze the image using the vision tool
+        from tools import _analyze_image
+        analysis_result = _analyze_image(str(file_path), question)
+
+        return JSONResponse({
+            "status": "success",
+            "message": "Image uploaded and analyzed successfully",
+            "file_path": str(file_path),
+            "question": question,
+            "analysis": analysis_result
+        })
+
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.get("/api/git/status")
+async def git_status_api(directory: str = "."):
+    """Get git status for a directory."""
+    try:
+        from tools import _git_status
+        result = _git_status(directory)
+        return {"status": "success", "output": result}
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.post("/api/git/commit")
+async def git_commit_api(request: Request):
+    """Commit changes with a message."""
+    try:
+        data = await request.json()
+        message = data.get("message")
+        directory = data.get("directory", ".")
+
+        if not message:
+            return {"error": "Commit message is required"}, 400
+
+        from tools import _git_commit
+        result = _git_commit(message, directory)
+        return {"status": "success", "output": result}
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.post("/api/git/push")
+async def git_push_api(request: Request):
+    """Push changes to remote."""
+    try:
+        data = await request.json()
+        directory = data.get("directory", ".")
+
+        from tools import _git_push
+        result = _git_push(directory)
+        return {"status": "success", "output": result}
     except Exception as e:
         return {"error": str(e)}, 500
 

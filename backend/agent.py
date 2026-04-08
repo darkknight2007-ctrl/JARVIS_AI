@@ -32,6 +32,11 @@ Use these tools exactly as described. Never fabricate tool calls.
 | `search_web`          | Search the internet for docs, APIs, news, or answers       |
 | `scaffold_project`    | Bootstrap frameworks (Vite, Next.js, Express, etc.)        |
 | `get_current_time`    | Retrieve the exact local system time                       |
+| `analyze_image`       | Analyze images, screenshots, or visual content            |
+| `git_status`          | Check git status and view changes                         |
+| `git_commit`          | Commit changes with a descriptive message                 |
+| `git_push`           | Push committed changes to remote repository              |
+| `git_init`           | Initialize new git repository                            |
 
 ---
 

@@ -259,6 +259,29 @@ function finishStreaming() {
   });
 }
 
+// ── Display complete assistant message ─────────────────────
+function showAssistantMessage(content) {
+  messageCount++;
+  updateMsgCount();
+  const bubbleId = "bubble-" + Date.now();
+  const msgs = document.getElementById("messages");
+  const row = document.createElement("div");
+  row.className = "msg assistant";
+  row.innerHTML = `
+    <div class="msg-avatar">J</div>
+    <div class="msg-content">
+      <div class="msg-text">${parseMarkdown(content)}</div>
+    </div>
+  `;
+  msgs.appendChild(row);
+  scrollToBottom();
+
+  // Re-run syntax highlighting
+  document.querySelectorAll("pre code").forEach(el => {
+    if (!el.dataset.highlighted) hljs.highlightElement(el);
+  });
+}
+
 // ── Markdown rendering ─────────────────────────────────────
 function parseMarkdown(text) {
   // Convert <think> tags into markdown blockquotes before parsing
@@ -507,4 +530,126 @@ function createTreeNode(node) {
   }
   
   return li;
+}
+
+// ── Vision / Image Upload ───────────────────────────────────
+async function handleImageUpload(files) {
+  if (!files || files.length === 0) return;
+
+  const file = files[0];
+  const maxSize = 10 * 1024 * 1024; // 10MB limit
+
+  if (file.size > maxSize) {
+    alert("Image too large. Please select an image under 10MB.");
+    return;
+  }
+
+  // Show loading state
+  const uploadBtn = document.querySelector("label[for='image-upload']");
+  const originalText = uploadBtn.textContent;
+  uploadBtn.textContent = "📤 Uploading...";
+  uploadBtn.style.opacity = "0.7";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("question", "What's in this image?");
+
+    const response = await fetch(`${API_URL}/api/upload-image`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // If analysis was done server-side, show the result
+      if (data.analysis && !data.analysis.includes("Vision model integration is in progress")) {
+        showAssistantMessage(data.analysis);
+      } else {
+        // Insert prompt to analyze the image
+        insertPrompt(`Analyze this image: ${data.file_path}`);
+        // Auto-send the message
+        setTimeout(() => {
+          document.getElementById("send-btn").click();
+        }, 500);
+      }
+    } else {
+      alert(`Upload failed: ${data.error || "Unknown error"}`);
+    }
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Failed to upload image. Please try again.");
+  } finally {
+    // Reset button state
+    uploadBtn.textContent = originalText;
+    uploadBtn.style.opacity = "1";
+    // Clear file input
+    document.getElementById("image-upload").value = "";
+  }
+}
+
+// ── Git Integration ────────────────────────────────────────
+async function runGitCommand(command) {
+  try {
+    let endpoint;
+
+    switch (command) {
+      case 'status':
+        endpoint = '/api/git/status';
+        break;
+      case 'push':
+        endpoint = '/api/git/push';
+        break;
+      default:
+        return;
+    }
+
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      showAssistantMessage(`Git ${command} result:\n\n${data.output}`);
+    } else {
+      alert(`Git ${command} failed: ${data.error}`);
+    }
+
+  } catch (error) {
+    console.error("Git command error:", error);
+    alert("Failed to execute git command. Please try again.");
+  }
+}
+
+function promptGitCommit() {
+  const message = prompt("Enter commit message:");
+  if (message) {
+    executeGitCommit(message);
+  }
+}
+
+async function executeGitCommit(message) {
+  try {
+    const response = await fetch(`${API_URL}/api/git/commit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      showAssistantMessage(`Git commit result:\n\n${data.output}`);
+    } else {
+      alert(`Git commit failed: ${data.error}`);
+    }
+
+  } catch (error) {
+    console.error("Git commit error:", error);
+    alert("Failed to execute git commit. Please try again.");
+  }
 }

@@ -129,7 +129,7 @@ This was a major update that both fixed showstopping bugs and added 3 new tools.
 - Refresh button (↻) to re-fetch the tree after JARVIS creates new files
 
 ### v1.5 — Theme Engine & Agent Precision Update *(April 8, 2026)*
-**Commit:** `Pending`
+**Commit:** `ead143f`
 
 | What changed | Details |
 |---|---|
@@ -147,7 +147,7 @@ This was a major update that both fixed showstopping bugs and added 3 new tools.
 ---
 
 ### v1.4 — Dynamic Model Switching *(April 8, 2026)*
-**Commit:** `Pending`
+**Commit:** `74ef535`
 
 | What changed | Details |
 |---|---|
@@ -186,7 +186,7 @@ JARVIS/
 
 ---
 
-## Current Tool Inventory (8 Tools)
+## Current Tool Inventory (12 Tools)
 
 | # | Tool | Description |
 |---|---|---|
@@ -198,6 +198,10 @@ JARVIS/
 | 6 | `get_current_time` | Returns formatted current date and time |
 | 7 | `search_web` | Live DuckDuckGo search for real-time info |
 | 8 | `scaffold_project` | Scaffolds Vite or Next.js projects via npx |
+| 9 | `analyze_image` | Analyze images using LLaVA vision model |
+| 10 | `git_status` | Check git status and view changes |
+| 11 | `git_commit` | Commit changes with descriptive message |
+| 12 | `git_push` | Push committed changes to remote repository |
 
 ---
 
@@ -212,6 +216,10 @@ JARVIS/
 | `GET` | `/api/files` | Returns recursive directory tree as JSON |
 | `GET` | `/api/models` | Fetches installed local Ollama models |
 | `POST` | `/api/model` | Hot-swaps the current LangChain model |
+| `POST` | `/api/upload-image` | Upload and analyze images with vision AI |
+| `GET` | `/api/git/status` | Get git status for current directory |
+| `POST` | `/api/git/commit` | Commit changes with message |
+| `POST` | `/api/git/push` | Push changes to remote repository |
 | `WS` | `/ws` | Real-time WebSocket for chat streaming |
 
 ---
@@ -220,12 +228,12 @@ JARVIS/
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Vision Integration | ⬜ Planned |
+| 1 | Vision Integration | ✅ Complete |
 | 2 | File Explorer Panel | ✅ Complete |
 | 3 | Web Search Engine | ✅ Complete |
 | 4 | Project Scaffolders | ✅ Complete |
-| 5 | Theme Engine | ⬜ Planned |
-| 6 | Git/GitHub Integration in UI | ⬜ Planned |
+| 5 | Theme Engine | ✅ Complete |
+| 6 | Git/GitHub Integration in UI | ✅ Complete |
 
 ---
 

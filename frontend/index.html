@@ -71,6 +71,25 @@
       
       <hr class="divider" />
 
+      <div class="section-label">Vision Tools</div>
+      <div class="quick-btns">
+        <label for="image-upload" class="quick-btn" style="cursor: pointer;">
+          📷 Upload Image
+          <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(this.files)">
+        </label>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section-label">Git Integration</div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="runGitCommand('status')">📊 Git Status</button>
+        <button class="quick-btn" onclick="promptGitCommit()">💾 Git Commit</button>
+        <button class="quick-btn" onclick="runGitCommand('push')">🚀 Git Push</button>
+      </div>
+
+      <hr class="divider" />
+
       <div class="section-label">Quick Prompts</div>
       <div class="quick-btns">
         <button class="quick-btn" onclick="insertPrompt('Create a modern landing page with hero section, features, and footer')">🚀 Landing Page</button>

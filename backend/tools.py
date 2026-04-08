@@ -185,5 +185,115 @@ def scaffold_project(framework: str, path: str) -> str:
     except Exception as e:
         return f"Error scaffolding project: {str(e)}"
 
+def _analyze_image(image_path: str, question: str = "What's in this image?") -> str:
+    """Analyze an image using vision capabilities. Use this to understand screenshots, diagrams, or visual content.
+
+    Args:
+        image_path: The path to the image file to analyze.
+        question: Optional question to ask about the image.
+    """
+    try:
+        path = Path(image_path).expanduser().resolve()
+        if not path.exists():
+            return f"Error: Image file '{image_path}' does not exist."
+        if not path.is_file():
+            return f"Error: '{image_path}' is a directory, not an image file."
+
+        # Check if it's a supported image format
+        supported_formats = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'}
+        if path.suffix.lower() not in supported_formats:
+            return f"Error: Unsupported image format '{path.suffix}'. Supported formats: {', '.join(supported_formats)}"
+
+        # Use LLaVA vision model for image analysis
+        from langchain_ollama import ChatOllama
+        import base64
+
+        # Read and encode the image
+        image_data = path.read_bytes()
+        base64_image = base64.b64encode(image_data).decode('utf-8')
+
+        # Create vision model instance
+        vision_model = ChatOllama(model="llava", temperature=0.1)
+
+        # Prepare the message with image
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": question},
+                    {"type": "image_url", "image_url": {"url": f"data:image/{path.suffix[1:]};base64,{base64_image}"}}
+                ]
+            }
+        ]
+
+        # Get analysis from vision model
+        response = vision_model.invoke(messages)
+
+        return f"Vision analysis of '{path.name}':\n\n{response.content}"
+
+    except Exception as e:
+        return f"Error analyzing image: {str(e)}"
+
+
+# Create tool instance
+analyze_image = tool(_analyze_image)
+
+
+def _git_status(directory: str = ".") -> str:
+    """Get the current git status of a repository. Use this to see changed files, staged changes, and branch information.
+
+    Args:
+        directory: The directory to check git status in.
+    """
+    try:
+        return run_terminal_command("git status", directory)
+    except Exception as e:
+        return f"Error getting git status: {str(e)}"
+
+
+def _git_commit(message: str, directory: str = ".") -> str:
+    """Commit changes to git with a message. Use this to save your work to version control.
+
+    Args:
+        message: The commit message describing the changes.
+        directory: The directory containing the git repository.
+    """
+    try:
+        return run_terminal_command(f"git add . && git commit -m '{message}'", directory)
+    except Exception as e:
+        return f"Error committing changes: {str(e)}"
+
+
+def _git_push(directory: str = ".") -> str:
+    """Push committed changes to remote repository. Use this to sync your code to GitHub.
+
+    Args:
+        directory: The directory containing the git repository.
+    """
+    try:
+        return run_terminal_command("git push", directory)
+    except Exception as e:
+        return f"Error pushing changes: {str(e)}"
+
+
+def _git_init(directory: str = ".") -> str:
+    """Initialize a new git repository. Use this to start version control for a project.
+
+    Args:
+        directory: The directory to initialize git in.
+    """
+    try:
+        return run_terminal_command("git init", directory)
+    except Exception as e:
+        return f"Error initializing git: {str(e)}"
+
+
+# Create tool instances
+git_status = tool(_git_status)
+git_commit = tool(_git_commit)
+git_push = tool(_git_push)
+git_init = tool(_git_init)
+
+
 def get_tools():
-    return [read_file, write_file, list_directory, create_directory, run_terminal_command, get_current_time, search_web, scaffold_project]
+    return [read_file, write_file, list_directory, create_directory, run_terminal_command, get_current_time, search_web, scaffold_project, analyze_image, git_status, git_commit, git_push, git_init]
