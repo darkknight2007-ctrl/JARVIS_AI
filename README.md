@@ -15,11 +15,13 @@ It runs 100% on your machine using **Ollama** — no cloud, no API keys, complet
 ## Setup (One-time)
 
 ### 1. Pull the AI model
+
 ```bash
 ollama pull qwen2.5-coder:7b
 ```
 
 ### 2. Install Python dependencies
+
 ```bash
 cd "/Users/vishnu/Desktop/VS CODE/JARVIS/backend"
 pip3 install -r requirements.txt
@@ -32,18 +34,22 @@ pip3 install -r requirements.txt
 ## Running JARVIS (Startup Guide)
 
 ### 1. Start Ollama (if not already running)
+
 ```bash
 ollama serve
 ```
 
 ### 2. Start the Backend Server
+
 Whenever you open VS Code and want to wake JARVIS up, run this in a New Terminal:
+
 ```bash
 cd "/Users/vishnu/Desktop/VS CODE/JARVIS/backend"
 python3 main.py
 ```
 
 ### 3. Open the UI
+
 Once the terminal says "Application startup complete", open your web browser and go to: 
 **http://localhost:8000**
 
