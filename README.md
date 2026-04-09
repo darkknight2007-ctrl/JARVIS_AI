@@ -6,6 +6,7 @@ It runs 100% on your machine using **Ollama** — no cloud, no API keys, complet
 ---
 
 ## Prerequisites
+
 - **Python 3.10+** (`python3 --version`)
 - **Ollama** installed — [ollama.com](https://ollama.com)
 
