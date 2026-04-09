@@ -117,7 +117,7 @@ class JarvisAgent:
         self.agent = create_react_agent(
             model=self.llm,
             tools=self.tools,
-            state_modifier=SystemMessage(content=JARVIS_SYSTEM_PROMPT),
+            checkpointer=False,
         )
 
     def change_model(self, new_model: str):

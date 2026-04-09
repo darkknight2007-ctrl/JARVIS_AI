@@ -24,6 +24,8 @@ cd "/Users/vishnu/Desktop/VS CODE/JARVIS/backend"
 pip3 install -r requirements.txt
 ```
 
+> **Note**: The project now uses langgraph for enhanced agent capabilities. Make sure all dependencies install correctly, especially langgraph.
+
 ---
 
 ## Running JARVIS (Startup Guide)
@@ -44,6 +46,8 @@ python3 main.py
 Once the terminal says "Application startup complete", open your web browser and go to: 
 **http://localhost:8000**
 
+> **Note**: If you encounter any issues with the agent initialization, make sure you have the required models installed. The system now uses langgraph for enhanced agentic capabilities.
+
 ---
 
 ## How to Restart the Server
@@ -54,6 +58,8 @@ If JARVIS gets stuck, or if you see a **"Connection Refused"** error in your bro
 2. Press `Ctrl + C` on your keyboard to force-quit the stuck process.
 3. Press the `Up Arrow` on your keyboard (this brings back the `python3 main.py` command) and hit `Enter`.
 4. Hard Refresh your browser page (`Cmd+Shift+R` or `Ctrl+F5`)!
+
+> **Troubleshooting Tip**: If you encounter agent initialization errors, check that all required dependencies are installed and that Ollama is running with the necessary models.
 
 ---
 
@@ -72,7 +78,7 @@ BACKEND_PORT=8000
 JARVIS/
 ├── backend/
 │   ├── main.py          # FastAPI + WebSocket server
-│   ├── agent.py         # LangChain agent + JARVIS personality
+│   ├── agent.py         # LangGraph agent + JARVIS personality
 │   ├── tools.py         # Agentic tools (file, terminal, etc.)
 │   ├── requirements.txt
 │   └── .env
@@ -82,6 +88,8 @@ JARVIS/
 │   └── app.js           # WebSocket client + streaming
 └── README.md
 ```
+
+> **Enhanced Capabilities**: The agent now uses langgraph for improved reasoning and tool execution patterns.
 
 ---
 
