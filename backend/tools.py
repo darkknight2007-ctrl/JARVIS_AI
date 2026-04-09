@@ -9,6 +9,44 @@ except ImportError:
     DDGS = None
 
 
+def _run_cmd(command: str, working_directory: str = ".") -> str:
+    """Execute a terminal/shell command on the local machine.
+    Internal function for running subprocess commands with safety checks.
+
+    Args:
+        command: The shell command to execute.
+        working_directory: The directory to run the command in. Defaults to current directory.
+    """
+    blocked = ["rm -rf /", "mkfs", ":(){ :|:& };:", "sudo rm -rf", "format c:"]
+    for danger in blocked:
+        if danger in command.lower():
+            return f"❌ Blocked: Command contains forbidden pattern '{danger}'."
+    try:
+        work_dir = Path(working_directory).expanduser().resolve()
+        if not work_dir.exists():
+            return f"Error: Working directory '{working_directory}' does not exist."
+        result = subprocess.run(
+            command,
+            shell=True,
+            cwd=str(work_dir),
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        output = ""
+        if result.stdout:
+            output += result.stdout
+        if result.stderr:
+            output += f"\n[stderr]: {result.stderr}"
+        if result.returncode != 0:
+            output += f"\n[exit code: {result.returncode}]"
+        return output.strip() if output.strip() else "✅ Command completed with no output."
+    except subprocess.TimeoutExpired:
+        return "❌ Error: Command timed out after 60 seconds."
+    except Exception as e:
+        return f"Error executing command: {str(e)}"
+
+
 @tool
 def read_file(file_path: str) -> str:
     """Read the content of a file from the local filesystem.
@@ -100,34 +138,7 @@ def run_terminal_command(command: str, working_directory: str = ".") -> str:
         command: The shell command to execute.
         working_directory: The directory to run the command in. Defaults to current directory.
     """
-    blocked = ["rm -rf /", "mkfs", ":(){ :|:& };:", "sudo rm -rf", "format c:"]
-    for danger in blocked:
-        if danger in command.lower():
-            return f"❌ Blocked: Command contains forbidden pattern '{danger}'."
-    try:
-        work_dir = Path(working_directory).expanduser().resolve()
-        if not work_dir.exists():
-            return f"Error: Working directory '{working_directory}' does not exist."
-        result = subprocess.run(
-            command,
-            shell=True,
-            cwd=str(work_dir),
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        output = ""
-        if result.stdout:
-            output += result.stdout
-        if result.stderr:
-            output += f"\n[stderr]: {result.stderr}"
-        if result.returncode != 0:
-            output += f"\n[exit code: {result.returncode}]"
-        return output.strip() if output.strip() else "✅ Command completed with no output."
-    except subprocess.TimeoutExpired:
-        return "❌ Error: Command timed out after 60 seconds."
-    except Exception as e:
-        return f"Error executing command: {str(e)}"
+    return _run_cmd(command, working_directory)
 
 
 @tool
@@ -246,7 +257,7 @@ def _git_status(directory: str = ".") -> str:
         directory: The directory to check git status in.
     """
     try:
-        return run_terminal_command("git status", directory)
+        return _run_cmd("git status", directory)
     except Exception as e:
         return f"Error getting git status: {str(e)}"
 
@@ -259,7 +270,7 @@ def _git_commit(message: str, directory: str = ".") -> str:
         directory: The directory containing the git repository.
     """
     try:
-        return run_terminal_command(f"git add . && git commit -m '{message}'", directory)
+        return _run_cmd(f"git add . && git commit -m '{message}'", directory)
     except Exception as e:
         return f"Error committing changes: {str(e)}"
 
@@ -271,7 +282,7 @@ def _git_push(directory: str = ".") -> str:
         directory: The directory containing the git repository.
     """
     try:
-        return run_terminal_command("git push", directory)
+        return _run_cmd("git push", directory)
     except Exception as e:
         return f"Error pushing changes: {str(e)}"
 
@@ -283,7 +294,7 @@ def _git_init(directory: str = ".") -> str:
         directory: The directory to initialize git in.
     """
     try:
-        return run_terminal_command("git init", directory)
+        return _run_cmd("git init", directory)
     except Exception as e:
         return f"Error initializing git: {str(e)}"
 

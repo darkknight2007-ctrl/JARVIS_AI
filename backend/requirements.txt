@@ -9,3 +9,4 @@ websockets
 ddgs
 langchain-community
 python-multipart
+langgraph

@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
-from langchain.agents import create_agent
+from langgraph.prebuilt import create_react_agent
+from langchain_core.messages import SystemMessage
 from langchain_core.messages import HumanMessage, AIMessage
 from tools import get_tools
 
@@ -113,10 +114,10 @@ class JarvisAgent:
         self._build_agent()
 
     def _build_agent(self):
-        self.agent = create_agent(
+        self.agent = create_react_agent(
             model=self.llm,
             tools=self.tools,
-            system_prompt=JARVIS_SYSTEM_PROMPT,
+            state_modifier=SystemMessage(content=JARVIS_SYSTEM_PROMPT),
         )
 
     def change_model(self, new_model: str):
